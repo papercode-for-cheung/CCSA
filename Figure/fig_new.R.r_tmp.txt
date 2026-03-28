@@ -1,0 +1,46 @@
+
+# 导图必要的包，没有安装包的朋友需要先安装哦~ 
+library(linkET)
+library(tidyverse)
+library(ggnewscale)
+
+# 导入数据
+chem = readxl::read_xlsx("")
+spec = readxl::read_xlsx("")
+
+# mantel test
+mantel <- mantel_test(spec, chem,
+                      spec_select = list(Ketone = ,
+                                         AromaticRing = ,
+                                         AromaticRing=,
+                                         Sulfoxide = )) %>% 
+  mutate(rd = cut(r, breaks = c(-Inf, , , Inf),
+                  labels = c("Low", "Norm", "High")),
+         pd = cut(p, breaks = c(-Inf, , , Inf),
+                  labels = c("Low", "Norm", "High")))
+
+
+##8.网络相关性热图
+pal_d = c("#85A827","#04BCC6","#EF8076")
+pal_c = c('#DCDCDC','#F4987A','#B70D28')
+
+##Figure01
+qcorrplot(correlate(chem), type="lower", diag=FALSE) +
+  geom_tile(color="black") +
+  geom_shaping(data = . %>% filter(r<=0),
+               marker = marker("shade"),colour = "white") +
+  geom_couple(data = mantel,
+              aes(colour = pd, size = rd), 
+              curvature = nice_curvature()) +
+  scale_fill_gradientn(colours = pal_c) +
+  scale_size_manual(values = c(, , )) +
+  scale_colour_manual(values = pal_d) +
+  guides(size = guide_legend(title = "Mantel's r",
+                             order = ,
+                             keyheight = unit(, "cm")),
+         colour = guide_legend(title = "Mantel's p", 
+                               order = ,
+                               keyheight = unit(, "cm")),
+         fill = guide_colorbar(title = "Pearson's r", order = )) +
+  theme(legend.box.spacing = unit(0, "pt"))
+
